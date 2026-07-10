@@ -1,0 +1,15 @@
+---
+description: Safety guardrails for KnowWhere PoC agent work
+alwaysApply: true
+---
+
+# Agent Guardrails
+
+- Work only on branch `feat/subconscious-outcome-loop` unless told otherwise.
+- Never modify `~/.hermes/hermes-agent` or the Rust product repo.
+- Never delete or overwrite live PostgreSQL summaries/sources; use prefixed fixtures + `finally` cleanup in tests.
+- Never commit credentials, `.env`, cache files (`.npz`, `.hermes/`), or local artifacts.
+- Do not patch Hermes core for plugin loading — use `kind: standalone` in `plugin.yaml`.
+- Leave `memory.provider` empty; KnowWhere hooks coexist with Hindsight.
+- Run `test_pipeline.py` before and after DB/plugin changes; new behavior needs `test_outcome_loop.py`.
+- Commit only when explicitly requested with the agreed message format.

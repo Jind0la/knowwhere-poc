@@ -189,22 +189,25 @@ class TestKnowWhereDB(unittest.TestCase):
         sql = self.mock_cursor.execute.call_args[0][0]
         self.assertNotIn("WHERE project", sql)
 
-    def test_search_ucb_debut_bypasses_min_score(self):
-        """search_ucb: debuts (debut_seen=FALSE) bypass min_score via OR"""
-        self.mock_cursor.fetchall.return_value = [
-            {"id": "1", "session_id": "s1", "project": "KnowWhere",
-             "summary_text": "debut", "anchor_id": None,
-             "ucb_score": 1.0, "debut_seen": False, "tier": "warm",
-             "view_count": 0, "weighted_score": 0.1, "similarity": 0.05},
-        ]
+    def test_search_ucb_no_debut_bypass(self):
+        """search_relevant/search_ucb: debuts must NOT bypass min_score."""
+        self.mock_cursor.fetchall.return_value = []
         embedding = np.array([0.1] * 256, dtype=np.float32)
 
         self.db.search_ucb(query_embedding=embedding, min_score=0.30)
 
-        # The FIRST execute call is the SELECT query; subsequent ones are
-        # mark_seen/record_access UPDATES
         select_sql = self.mock_cursor.execute.call_args_list[0][0][0]
-        self.assertIn("OR debut_seen = FALSE", select_sql)
+        self.assertNotIn("OR debut_seen = FALSE", select_sql)
+        self.assertIn(">= %s", select_sql)
+
+    def test_search_ucb_orders_by_weighted_score(self):
+        """search_ucb: ORDER BY weighted_score DESC (relevance first)."""
+        self.mock_cursor.fetchall.return_value = []
+        embedding = np.array([0.1] * 256, dtype=np.float32)
+
+        self.db.search_ucb(query_embedding=embedding)
+        sql = self.mock_cursor.execute.call_args[0][0]
+        self.assertIn("ORDER BY weighted_score DESC", sql)
 
     def test_search_ucb_empty_results(self):
         """search_ucb: empty result set returns empty list"""
@@ -213,15 +216,6 @@ class TestKnowWhereDB(unittest.TestCase):
 
         results = self.db.search_ucb(query_embedding=embedding)
         self.assertEqual(results, [])
-
-    def test_search_ucb_orders_by_debut_then_score(self):
-        """search_ucb: ORDER BY debut_seen ASC, weighted_score DESC"""
-        self.mock_cursor.fetchall.return_value = []
-        embedding = np.array([0.1] * 256, dtype=np.float32)
-
-        self.db.search_ucb(query_embedding=embedding)
-        sql = self.mock_cursor.execute.call_args[0][0]
-        self.assertIn("ORDER BY debut_seen ASC, weighted_score DESC", sql)
 
     def test_search_ucb_ucb_formula_present(self):
         """search_ucb: UCB weight formula (1.0 + %s * (ucb_score - 1.0)) is in SQL"""

@@ -76,24 +76,100 @@ class KnowWhereDB:
         summary_text: str,
         embedding: np.ndarray | None = None,
         tier: str = "warm",
+        anchor_id: str | None = None,
     ) -> str:
         """Insert or update a summary. Returns the summary UUID."""
         with self.conn.cursor() as cur:
             cur.execute(
-                """INSERT INTO summaries (session_id, project, summary_text, embedding, tier)
-                   VALUES (%s, %s, %s, %s, %s)
+                """INSERT INTO summaries (session_id, project, summary_text, embedding, tier, anchor_id)
+                   VALUES (%s, %s, %s, %s, %s, %s)
                    ON CONFLICT (session_id) DO UPDATE SET
                        project = EXCLUDED.project,
                        summary_text = EXCLUDED.summary_text,
                        embedding = COALESCE(EXCLUDED.embedding, summaries.embedding),
                        tier = EXCLUDED.tier,
+                       anchor_id = COALESCE(EXCLUDED.anchor_id, summaries.anchor_id),
                        updated_at = NOW()
                    RETURNING id""",
-                (session_id, project, summary_text, embedding, tier),
+                (session_id, project, summary_text, embedding, tier, anchor_id),
             )
             result = str(cur.fetchone()[0])
             self.conn.commit()
             return result
+
+    def search_relevant(
+        self,
+        query_embedding: np.ndarray,
+        project: str | None = None,
+        top_k: int = 5,
+        min_score: float = MIN_SCORE,
+        ucb_weight: float = 0.5,
+        *,
+        record_access: bool = True,
+        session_id_prefix: str | None = None,
+    ) -> list[dict]:
+        """UCB-weighted similarity search — relevance only, no debut bypass."""
+        prefix_clause = ""
+        prefix_param: list[Any] = []
+        if session_id_prefix:
+            prefix_clause = " AND session_id LIKE %s"
+            prefix_param = [f"{session_id_prefix}%"]
+
+        if project:
+            query = f"""
+                SELECT id, session_id, project, summary_text, anchor_id,
+                       ucb_score, debut_seen, tier, view_count,
+                       (1 - (embedding <=> %s::vector)) *
+                       (1.0 + %s * (ucb_score - 1.0)) AS weighted_score,
+                       1 - (embedding <=> %s::vector) AS similarity
+                FROM summaries
+                WHERE project = %s
+                  AND embedding IS NOT NULL
+                  AND (1 - (embedding <=> %s::vector) >= %s){prefix_clause}
+                ORDER BY weighted_score DESC
+                LIMIT %s
+            """
+            params = [
+                query_embedding,
+                ucb_weight,
+                query_embedding,
+                project,
+                query_embedding,
+                min_score,
+                *prefix_param,
+                top_k,
+            ]
+        else:
+            query = f"""
+                SELECT id, session_id, project, summary_text, anchor_id,
+                       ucb_score, debut_seen, tier, view_count,
+                       (1 - (embedding <=> %s::vector)) *
+                       (1.0 + %s * (ucb_score - 1.0)) AS weighted_score,
+                       1 - (embedding <=> %s::vector) AS similarity
+                FROM summaries
+                WHERE embedding IS NOT NULL
+                  AND (1 - (embedding <=> %s::vector) >= %s){prefix_clause}
+                ORDER BY weighted_score DESC
+                LIMIT %s
+            """
+            params = [
+                query_embedding,
+                ucb_weight,
+                query_embedding,
+                query_embedding,
+                min_score,
+                *prefix_param,
+                top_k,
+            ]
+
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute(query, params)
+            results = [dict(r) for r in cur.fetchall()]
+
+        if record_access and results:
+            self.record_access([r["id"] for r in results])
+
+        return results
 
     def search_ucb(
         self,
@@ -104,56 +180,20 @@ class KnowWhereDB:
         ucb_weight: float = 0.5,
     ) -> list[dict]:
         """Find top-K summaries using UCB-weighted cosine similarity.
-        
-        Score = similarity * (1.0 + ucb_weight * (ucb_score - 1.0))
-        This gives higher scores to summaries with high UCB (less viewed).
-        Debut summaries (debut_seen=FALSE) get priority boost.
-        """
-        if project:
-            query = """
-                SELECT id, session_id, project, summary_text, anchor_id,
-                       ucb_score, debut_seen, tier, view_count,
-                       (1 - (embedding <=> %s::vector)) * 
-                       (1.0 + %s * (ucb_score - 1.0)) AS weighted_score,
-                       1 - (embedding <=> %s::vector) AS similarity
-                FROM summaries
-                WHERE project = %s
-                  AND (1 - (embedding <=> %s::vector) >= %s OR debut_seen = FALSE)
-                ORDER BY debut_seen ASC, weighted_score DESC
-                LIMIT %s
-            """
-            params = [query_embedding, ucb_weight, query_embedding,
-                      project, query_embedding, min_score, top_k]
-        else:
-            query = """
-                SELECT id, session_id, project, summary_text, anchor_id,
-                       ucb_score, debut_seen, tier, view_count,
-                       (1 - (embedding <=> %s::vector)) *
-                       (1.0 + %s * (ucb_score - 1.0)) AS weighted_score,
-                       1 - (embedding <=> %s::vector) AS similarity
-                FROM summaries
-                WHERE (1 - (embedding <=> %s::vector) >= %s OR debut_seen = FALSE)
-                ORDER BY debut_seen ASC, weighted_score DESC
-                LIMIT %s
-            """
-            params = [query_embedding, ucb_weight, query_embedding,
-                      query_embedding, min_score, top_k]
 
-        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute(query, params)
-            results = [dict(r) for r in cur.fetchall()]
-            
-            # Mark debuts as seen
-            debut_ids = [r["id"] for r in results if r["debut_seen"] is False]
-            if debut_ids:
-                self.mark_seen(debut_ids)
-            
-            # Record access for UCB update
-            all_ids = [r["id"] for r in results]
-            if all_ids:
-                self.record_access(all_ids)
-            
-            return results
+        Backward-compatible alias for relevance search (no debut bypass).
+        """
+        results = self.search_relevant(
+            query_embedding,
+            project=project,
+            top_k=top_k,
+            min_score=min_score,
+            ucb_weight=ucb_weight,
+        )
+        debut_ids = [r["id"] for r in results if r.get("debut_seen") is False]
+        if debut_ids:
+            self.mark_seen(debut_ids)
+        return results
 
     def get_debuts(self, project: str | None = None, limit: int = 5) -> list[dict]:
         """Get summaries that have never been injected (debut_seen=FALSE)."""
@@ -250,6 +290,158 @@ class KnowWhereDB:
             cur.execute("SELECT * FROM sources WHERE id = %s", (source_id,))
             row = cur.fetchone()
             return dict(row) if row else None
+
+    def get_source_by_anchor(self, anchor_id: str) -> dict | None:
+        """Deep recall: fetch source row by anchor UUID (sources.id)."""
+        return self.get_source(anchor_id)
+
+    def recall_deep(
+        self,
+        *,
+        session_id: str | None = None,
+        anchor_id: str | None = None,
+        limit: int = 5,
+    ) -> dict:
+        """Deep recall by session_id or anchor_id; returns original full_text."""
+        if anchor_id:
+            source = self.get_source_by_anchor(anchor_id)
+            if not source:
+                return {"found": False, "anchor_id": anchor_id}
+            return {
+                "found": True,
+                "anchor_id": str(source["id"]),
+                "session_id": source.get("session_id"),
+                "full_text": source["full_text"],
+                "char_count": source.get("char_count"),
+                "created_at": str(source.get("created_at", "")),
+            }
+
+        sid = (session_id or "").strip()
+        if not sid:
+            return {"found": False, "error": "session_id or anchor_id required"}
+
+        sources = self.get_sources_by_session(sid, limit=limit)
+        if not sources:
+            return {"found": False, "session_id": sid}
+        return {
+            "found": True,
+            "session_id": sid,
+            "source_count": len(sources),
+            "sources": [
+                {
+                    "id": str(s["id"]),
+                    "full_text": s["full_text"],
+                    "char_count": s["char_count"],
+                    "created_at": str(s.get("created_at", "")),
+                }
+                for s in sources
+            ],
+        }
+
+    def cleanup_fixture_prefix(self, prefix: str) -> dict:
+        """Delete test fixtures by session_id prefix (summaries then sources)."""
+        if not prefix or len(prefix) < 8:
+            raise ValueError("fixture prefix must be at least 8 chars")
+        pattern = prefix if prefix.endswith("%") else f"{prefix}%"
+        with self.conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM summaries WHERE session_id LIKE %s RETURNING id",
+                (pattern,),
+            )
+            summary_ids = [str(r[0]) for r in cur.fetchall()]
+            cur.execute(
+                "DELETE FROM sources WHERE session_id LIKE %s RETURNING id",
+                (pattern,),
+            )
+            source_ids = [str(r[0]) for r in cur.fetchall()]
+            self.conn.commit()
+        return {
+            "summaries_deleted": len(summary_ids),
+            "sources_deleted": len(source_ids),
+        }
+
+    def get_summary_by_session(self, session_id: str) -> dict | None:
+        """Fetch summary row for a session."""
+        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute(
+                "SELECT id, session_id, project, summary_text, anchor_id FROM summaries WHERE session_id = %s",
+                (session_id,),
+            )
+            row = cur.fetchone()
+            return dict(row) if row else None
+
+    def link_summary_to_sources(self, session_id: str) -> dict:
+        """Bridge the provenance gap: link summary → its most recent source.
+
+        Sets summaries.anchor_id to the most recent sources.id for the
+        same session_id. This enables Deep Recall (kw_recall) to retrieve
+        full source text from injected summary blocks.
+
+        Returns a dict with rows_updated count and the anchor_id that was set.
+        """
+        with self.conn.cursor() as cur:
+            # Find the most recent source for this session
+            cur.execute(
+                """SELECT id FROM sources
+                   WHERE session_id = %s
+                   ORDER BY created_at DESC LIMIT 1""",
+                (session_id,),
+            )
+            source_row = cur.fetchone()
+            if not source_row:
+                self.conn.commit()
+                return {"rows_updated": 0, "error": "No source found for session"}
+
+            anchor_id = str(source_row[0])
+
+            # Link the summary to this source
+            cur.execute(
+                """UPDATE summaries
+                   SET anchor_id = %s,
+                       updated_at = NOW()
+                   WHERE session_id = %s
+                     AND anchor_id IS NULL""",
+                (anchor_id, session_id),
+            )
+            rows = cur.rowcount
+            self.conn.commit()
+            return {"rows_updated": rows, "anchor_id": anchor_id}
+
+    def get_provenance_chain(self, summary_id: str) -> dict | None:
+        """Check the full provenance chain: summary → source.
+
+        Returns a dict with the summary and its linked source text,
+        or a 'gap' key if the chain is broken.
+        """
+        with self.conn.cursor(
+            cursor_factory=psycopg2.extras.DictCursor
+        ) as cur:
+            cur.execute(
+                """SELECT s.id AS summary_id, s.session_id, s.project,
+                          s.summary_text, s.anchor_id,
+                          src.full_text AS source_text, src.char_count,
+                          src.created_at AS source_created
+                   FROM summaries s
+                   LEFT JOIN sources src ON s.anchor_id = src.id
+                   WHERE s.id = %s""",
+                (summary_id,),
+            )
+            row = cur.fetchone()
+            if not row:
+                return None
+
+            result = dict(row)
+            if result["anchor_id"] is None:
+                result["gap"] = (
+                    "No anchor — provenance chain broken. "
+                    "Run link_summary_to_sources() to bridge."
+                )
+            elif result["source_text"] is None:
+                result["gap"] = (
+                    "Anchor exists but source deleted — "
+                    "chain is severed."
+                )
+            return result
 
     def get_sources_by_session(
         self, session_id: str, limit: int = 5

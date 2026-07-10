@@ -1,0 +1,12 @@
+---
+description: Reasoning quality for KnowWhere outcome slice
+alwaysApply: true
+---
+
+# Karpathy Reasoning
+
+- Outcome is **perception in Session B**, not search: injection must surface the right prior decision without `session_search`, file reads, or explicit recall commands.
+- Separate **relevance** (similarity ≥ min_score) from **exploration** (debut); never let `debut_seen=FALSE` override irrelevant matches.
+- Prefer the smallest vertical slice that closes the loop: hook → store → instant summary → inject → eval.
+- When stuck, read actual code and test output; do not assume DB state from old reviews (e.g. embedding NULL counts).
+- State hypotheses, run one experiment, update beliefs from evidence.

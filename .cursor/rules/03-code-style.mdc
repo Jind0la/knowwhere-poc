@@ -1,0 +1,14 @@
+---
+description: Code style for knowwhere-poc
+alwaysApply: true
+---
+
+# Code Style
+
+- Match existing module patterns: stdlib + numpy/psycopg2/pgvector only; no new dependencies.
+- Keep functions focused; extract testable pure helpers for injection formatting and query building.
+- Use `from __future__ import annotations`; type hints on public APIs.
+- Secrets from env only (`KNOWWHERE_DB_URL`, `DEEPSEEK_API_KEY`); never hardcode.
+- Log with `logging`, not print, in plugin code; no `/tmp` debug markers.
+- Tests: unittest + mocks for unit; prefixed live PG fixtures with guaranteed cleanup for integration.
+- German user-facing strings OK in docs; code/comments English unless mirroring existing files.

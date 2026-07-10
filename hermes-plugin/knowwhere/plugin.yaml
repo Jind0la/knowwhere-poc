@@ -1,0 +1,12 @@
+name: knowwhere
+version: 4.0.0
+kind: standalone
+description: "KnowWhere — Hook-based subconscious injection (pre/post LLM, session finalize/reset). UCB pgvector search, instant+full summaries, kw_recall deep recall. Coexists with Hindsight."
+author: Nimar / Era
+provides_hooks:
+  - pre_llm_call
+  - post_llm_call
+  - on_session_finalize
+  - on_session_reset
+provides_tools:
+  - kw_recall
