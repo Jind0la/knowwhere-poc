@@ -76,14 +76,16 @@ def embed_query(query: str) -> np.ndarray:
 # ---- pgvector retrieval ----
 
 def retrieve_from_pgvector(query_emb: np.ndarray, top_k: int = TOP_K,
-                           project: str | None = None) -> list[dict]:
-    """Retrieve top-K summaries from pgvector via UCB-weighted HNSW search.
+                           project: str | None = None,
+                           query_text: str = "") -> list[dict]:
+    """Retrieve top-K summaries from pgvector via hybrid UCB search.
     Automatically marks debuts as seen and records access for UCB updates."""
     from knowwhere_db import get_db
-    
+
     db = get_db()
     try:
-        results = db.search_ucb(query_emb, project=project, top_k=top_k)
+        results = db.search_hybrid(query_emb, query_text=query_text,
+                                   project=project, top_k=top_k)
         return results
     finally:
         db.close()
