@@ -5,6 +5,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLUGIN_SRC="${REPO_ROOT}/hermes-plugin/knowwhere"
 PLUGIN_DST="${HOME}/.hermes/plugins/knowwhere"
+BACKUP_ROOT="${HOME}/.hermes/plugin-backups/knowwhere"
 BRANCH_EXPECTED="feat/subconscious-outcome-loop"
 
 echo "==> KnowWhere plugin install"
@@ -28,17 +29,34 @@ if [[ "${kind}" != "standalone" ]]; then
   exit 1
 fi
 
+# Migrate stale backups left inside plugin discovery root (loader collision).
+mkdir -p "${BACKUP_ROOT}"
+shopt -s nullglob
+for old in "${HOME}/.hermes/plugins/knowwhere.backup."*; do
+  if [[ -d "${old}" ]]; then
+    ts="$(basename "${old}" | sed 's/^knowwhere\.backup\.//')"
+    dest="${BACKUP_ROOT}/${ts}"
+    echo "==> Migrating stale backup ${old} -> ${dest}"
+    mkdir -p "${dest}"
+    mv "${old}"/* "${dest}/" 2>/dev/null || true
+    rmdir "${old}" 2>/dev/null || mv "${old}" "${dest}/_dir"
+  fi
+done
+shopt -u nullglob
+
 mkdir -p "${HOME}/.hermes/plugins"
 if [[ -e "${PLUGIN_DST}" && ! -L "${PLUGIN_DST}" ]]; then
   ts="$(date +%Y%m%d_%H%M%S)"
-  backup="${HOME}/.hermes/plugins/knowwhere.backup.${ts}"
-  echo "==> Backing up existing plugin dir to ${backup}"
-  mv "${PLUGIN_DST}" "${backup}"
+  backup_dir="${BACKUP_ROOT}/${ts}"
+  echo "==> Backing up existing plugin dir to ${backup_dir}"
+  mkdir -p "${backup_dir}"
+  mv "${PLUGIN_DST}" "${backup_dir}/"
 elif [[ -L "${PLUGIN_DST}" ]]; then
   ts="$(date +%Y%m%d_%H%M%S)"
-  backup="${HOME}/.hermes/plugins/knowwhere.symlink.${ts}"
-  echo "==> Saving old symlink reference to ${backup}"
-  readlink "${PLUGIN_DST}" > "${backup}" || true
+  ref_file="${BACKUP_ROOT}/${ts}/symlink_target.txt"
+  echo "==> Saving old symlink reference to ${ref_file}"
+  mkdir -p "${BACKUP_ROOT}/${ts}"
+  readlink "${PLUGIN_DST}" > "${ref_file}" || true
   rm "${PLUGIN_DST}"
 fi
 
@@ -46,13 +64,10 @@ ln -sfn "${PLUGIN_SRC}" "${PLUGIN_DST}"
 echo "==> Symlink: ${PLUGIN_DST} -> ${PLUGIN_SRC}"
 
 if command -v hermes >/dev/null 2>&1; then
-  if hermes plugins list 2>/dev/null | grep -q "knowwhere.*enabled"; then
-    echo "==> Plugin already enabled"
+  if hermes plugins list 2>/dev/null | grep -Eiq "knowwhere.*(enabled|✓|active)"; then
+    echo "==> Plugin already enabled (skipping enable prompt)"
   else
-    yes "" 2>/dev/null | hermes plugins enable knowwhere 2>/dev/null \
-      || hermes plugins enable knowwhere 2>/dev/null \
-      || true
-    echo "==> Plugin enable attempted"
+    echo "==> Plugin enable skipped — run: hermes plugins enable knowwhere"
   fi
 else
   echo "WARN: hermes CLI not in PATH — enable manually: hermes plugins enable knowwhere"

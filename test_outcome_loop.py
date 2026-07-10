@@ -80,9 +80,9 @@ class TestSummaryPipeline(unittest.TestCase):
             project="KnowWhere",
             anchor_id="aid-123",
         )
-        self.assertGreaterEqual(len(s), 300)
         self.assertLessEqual(len(s), 500)
         self.assertIn("aid-123", s)
+        self.assertIn("J14-J15", s)
 
 
 class TestKnowWhereDBOutcome(unittest.TestCase):

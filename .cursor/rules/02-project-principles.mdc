@@ -8,7 +8,7 @@ alwaysApply: true
 - **PoC now**: Python + pgvector + Hermes hooks in this repo. **Rust product later** — not in scope.
 - Plugin installs via symlink from `hermes-plugin/knowwhere` → `~/.hermes/plugins/knowwhere`.
 - `pre_llm_call`: fresh query per user turn; ephemeral `{ "context": "..." }` injection, max 3000 chars.
-- `post_llm_call`: nonblocking source + instant summary (300–500c, 256d embed) for back-to-back sessions.
+- `post_llm_call`: nonblocking source + instant summary (≤500c, 256d embed) for back-to-back sessions.
 - `on_session_finalize`: async DeepSeek full summary replaces instant; API failure keeps instant valid.
 - `kw_recall`: deep recall by `session_id` or `anchor_id`; return original text unchanged.
 - Thread safety: fresh DB connection per background job, never share psycopg2 across threads.

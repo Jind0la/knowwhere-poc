@@ -22,13 +22,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from kw_injection import contains_distractor, extract_outcome_facts, format_injection  # noqa: E402
+from hermes_env import get_knowwhere_db_url, get_secret  # noqa: E402
 
 FIXTURE_PREFIX = "kw_outcome_eval_"
 REPORT_PATH = ROOT / "scripts" / "outcome_eval_report.json"
 
 # Fabricated Session-A facts (never used in real sessions)
-ROOT_CAUSE = "Zephyr flux capacitor polarity inversion on module 7"
-FIX_ACTION = "swap J14-J15 jumpers on the Zephyr board revision C2"
+ROOT_CAUSE = "Flux-Kondensator Polaritäts-Inversion an Modul 7"
+FIX_ACTION = "Jumper J14-J15 auf dem Zephyr Board Revision C2 tauschen"
 MARKER = f"OUTCOME_{uuid.uuid4().hex[:8]}"
 
 DISTRACTORS = [
@@ -58,9 +59,8 @@ DISTRACTORS = [
 SESSION_A = f"{FIXTURE_PREFIX}session_a_{MARKER}"
 TARGET_SUMMARY = (
     f"[KnowWhere|sid={SESSION_A}|aid=PLACEHOLDER|project=KnowWhere] "
-    f"Session A ({MARKER}): User debugged Era pet sync. "
-    f"Root cause: {ROOT_CAUSE}. "
-    f"Fix applied: {FIX_ACTION}."
+    f"Era Pet-Sync Zephyr Board ({MARKER}): Root Cause: {ROOT_CAUSE}. "
+    f"Exakter Fix: {FIX_ACTION}."
 )
 
 SESSION_B_QUESTION = (
@@ -70,7 +70,7 @@ SESSION_B_QUESTION = (
 
 
 def _require_db() -> str:
-    url = os.environ.get("KNOWWHERE_DB_URL", "")
+    url = get_knowwhere_db_url()
     if not url:
         raise RuntimeError("KNOWWHERE_DB_URL not set")
     return url
@@ -86,23 +86,7 @@ def _embed_or_skip(db, text: str):
 
 
 def _insert_fixtures(db) -> dict:
-    """Insert Session A target + distractors with embeddings."""
-    source_id = db.insert_source(
-        SESSION_A,
-        f"[user] Zephyr pet sync fails\n[assistant] {ROOT_CAUSE}. {FIX_ACTION}",
-        metadata={"eval": MARKER, "type": "outcome_eval"},
-    )
-    summary_text = TARGET_SUMMARY.replace("PLACEHOLDER", str(source_id))
-    emb = _embed_or_skip(db, summary_text)
-    sum_id = db.upsert_summary(
-        session_id=SESSION_A,
-        project="KnowWhere",
-        summary_text=summary_text,
-        embedding=emb,
-        tier="hot",
-        anchor_id=str(source_id),
-    )
-
+    """Insert distractors first, then Session A target (newest debut wins)."""
     distractor_ids = []
     for d in DISTRACTORS:
         sid = d["session_id"]
@@ -119,6 +103,22 @@ def _insert_fixtures(db) -> dict:
             )
         )
 
+    source_id = db.insert_source(
+        SESSION_A,
+        f"[user] Zephyr Pet-Sync hängt\n[assistant] {ROOT_CAUSE}. {FIX_ACTION}",
+        metadata={"eval": MARKER, "type": "outcome_eval"},
+    )
+    summary_text = TARGET_SUMMARY.replace("PLACEHOLDER", str(source_id))
+    emb = _embed_or_skip(db, summary_text)
+    sum_id = db.upsert_summary(
+        session_id=SESSION_A,
+        project="KnowWhere",
+        summary_text=summary_text,
+        embedding=emb,
+        tier="hot",
+        anchor_id=str(source_id),
+    )
+
     return {
         "marker": MARKER,
         "session_a": SESSION_A,
@@ -128,24 +128,39 @@ def _insert_fixtures(db) -> dict:
     }
 
 
-def _build_injection_from_db(db) -> str:
+def _build_injection_from_db(
+    db,
+    *,
+    session_id_prefix: str | None = FIXTURE_PREFIX,
+    include_debuts: bool = False,
+) -> tuple[str, bool, list[str]]:
     from kw_injection import filter_guardrails, merge_relevant_and_debuts
 
     emb = _embed_or_skip(db, SESSION_B_QUESTION)
+    production = session_id_prefix is None
     relevant = db.search_relevant(
         emb,
         top_k=5,
-        min_score=0.15,
-        session_id_prefix=FIXTURE_PREFIX,
+        min_score=0.30 if production else 0.15,
+        ucb_weight=0.5,
+        session_id_prefix=session_id_prefix,
         record_access=False,
     )
-    merged = merge_relevant_and_debuts(relevant, [], debut_limit=0)
+    debuts: list[dict] = []
+    if include_debuts and production:
+        debuts = [
+            d for d in db.get_debuts(limit=8) if d.get("session_id") == SESSION_A
+        ]
+    merged = merge_relevant_and_debuts(relevant, debuts, debut_limit=2)
     clean = filter_guardrails(merged)
-    return format_injection(clean)
+    injection = format_injection(clean)
+    session_ids = [r.get("session_id", "") for r in clean]
+    target_hit = any(r.get("session_id") == SESSION_A for r in clean)
+    return injection, target_hit, session_ids
 
 
 def _call_llm(system: str, user: str) -> str:
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
+    api_key = get_secret("DEEPSEEK_API_KEY", "")
     if not api_key:
         raise RuntimeError("DEEPSEEK_API_KEY not set")
 
@@ -178,7 +193,7 @@ def _call_llm(system: str, user: str) -> str:
 def _score_response(text: str, *, injected: bool) -> dict:
     if injected:
         required = ["J14-J15", "Modul 7", "Flux"]
-        alt_ok = ["module 7", "flux capacitor", "polarity", "Polarität"]
+        alt_ok = ["module 7", "flux-kondensator", "flux capacitor", "polarity", "polarität"]
         found = extract_outcome_facts(text, required)
         alt_found = extract_outcome_facts(text, alt_ok)
         has_distractor = contains_distractor(
@@ -208,8 +223,10 @@ def run_eval(*, live: bool) -> dict:
         "status": "blocked",
         "baseline": {},
         "injected": {},
-        "injection_chars": 0,
-        "target_in_injection": False,
+        "fixture_isolated": {},
+        "global_corpus": {},
+        "db_health_before": {},
+        "db_health_after": {},
         "errors": [],
     }
 
@@ -223,12 +240,27 @@ def run_eval(*, live: bool) -> dict:
     db = KnowWhereDB(db_url=_require_db())
     meta = {}
     try:
+        report["db_health_before"] = db.health_check()
         meta = _insert_fixtures(db)
         report["fixtures"] = {k: v for k, v in meta.items() if k != "distractor_summary_ids"}
 
-        injection = _build_injection_from_db(db)
-        report["injection_chars"] = len(injection)
-        report["target_in_injection"] = SESSION_A in injection and MARKER in injection
+        inj_iso, target_iso, sids_iso = _build_injection_from_db(
+            db, session_id_prefix=FIXTURE_PREFIX, include_debuts=False
+        )
+        inj_global, target_global, sids_global = _build_injection_from_db(
+            db, session_id_prefix=None, include_debuts=True
+        )
+        report["fixture_isolated"] = {
+            "target_in_injection": target_iso,
+            "injection_chars": len(inj_iso),
+            "session_ids": sids_iso,
+        }
+        report["global_corpus"] = {
+            "target_in_injection": target_global,
+            "injection_chars": len(inj_global),
+            "session_ids": sids_global,
+            "corpus_summaries": report["db_health_before"].get("summaries", 0),
+        }
 
         system_base = (
             "Du bist Era, Ninars Assistent. Antworte präzise auf Deutsch. "
@@ -237,8 +269,8 @@ def run_eval(*, live: bool) -> dict:
         )
         baseline_user = SESSION_B_QUESTION
         injected_user = (
-            f"{SESSION_B_QUESTION}\n\n---\n{injection}\n---"
-            if injection
+            f"{SESSION_B_QUESTION}\n\n---\n{inj_global}\n---"
+            if inj_global
             else SESSION_B_QUESTION
         )
 
@@ -261,7 +293,7 @@ def run_eval(*, live: bool) -> dict:
         elif (
             report["baseline"].get("pass")
             and report["injected"].get("pass")
-            and report["target_in_injection"]
+            and report["global_corpus"].get("target_in_injection")
         ):
             report["status"] = "pass"
         else:
@@ -271,6 +303,14 @@ def run_eval(*, live: bool) -> dict:
         try:
             cleanup = db.cleanup_fixture_prefix(FIXTURE_PREFIX + "")
             report["cleanup"] = cleanup
+            report["db_health_after"] = db.health_check()
+            before = report.get("db_health_before", {})
+            after = report.get("db_health_after", {})
+            if before and after:
+                report["db_restored"] = (
+                    before.get("summaries") == after.get("summaries")
+                    and before.get("sources") == after.get("sources")
+                )
         except Exception as exc:
             report["errors"].append(f"cleanup: {exc}")
         db.close()

@@ -20,7 +20,6 @@ TRUNC_DIM = 256
 EMBED_TIMEOUT = 30
 DEEPSEEK_TIMEOUT = 45
 
-INSTANT_MIN_CHARS = 300
 INSTANT_MAX_CHARS = 500
 FULL_MAX_CHARS = 500
 
@@ -51,12 +50,11 @@ def embed_text(text: str) -> Optional[np.ndarray]:
         return None
 
 
-def _clip(text: str, lo: int, hi: int) -> str:
+def _clip_max(text: str, hi: int) -> str:
+    """Trim whitespace and enforce upper bound only — never pad or invent content."""
     text = re.sub(r"\s+", " ", (text or "").strip())
-    if len(text) < lo:
-        text = text + (" Additional session context for cross-session subconscious recall." * 8)
     if len(text) <= hi:
-        return text[:hi]
+        return text
     cut = text[: hi - 3].rsplit(" ", 1)[0]
     return cut + "..."
 
@@ -69,19 +67,21 @@ def make_instant_summary(
     project: str,
     anchor_id: str | None = None,
 ) -> str:
-    """Build a 300–500 char self-contained instant summary."""
+    """Build a self-contained instant summary (≤500 chars, no filler)."""
     user = (user_message or "").strip()[:800]
     assistant = (assistant_message or "").strip()[:1200]
     aid = anchor_id or "pending"
     head = f"[KnowWhere|sid={session_id}|aid={aid}|project={project}]"
     body = f"User: {user} Outcome: {assistant}"
     summary = f"{head} {body}"
-    return _clip(summary, INSTANT_MIN_CHARS, INSTANT_MAX_CHARS)
+    return _clip_max(summary, INSTANT_MAX_CHARS)
 
 
 def call_deepseek_full_summary(turns_text: str) -> Optional[str]:
     """Generate a richer session summary via DeepSeek; None on failure."""
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
+    from hermes_env import get_secret
+
+    api_key = get_secret("DEEPSEEK_API_KEY", "")
     if not api_key or not (turns_text or "").strip():
         return None
 
@@ -115,7 +115,7 @@ def call_deepseek_full_summary(turns_text: str) -> Optional[str]:
         with urllib.request.urlopen(req, timeout=DEEPSEEK_TIMEOUT) as resp:
             data = json.loads(resp.read())
         text = data["choices"][0]["message"]["content"].strip()
-        return _clip(text, INSTANT_MIN_CHARS, FULL_MAX_CHARS)
+        return _clip_max(text, FULL_MAX_CHARS)
     except Exception as exc:
         logger.warning("DeepSeek full summary failed: %s", exc)
         return None

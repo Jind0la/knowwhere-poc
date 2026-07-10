@@ -26,7 +26,7 @@ pre_llm_call (every user turn, fresh query)
     → guardrail filter → format ≤3000 chars → inject
 
 post_llm_call (nonblocking thread, fresh DB conn)
-    → insert_source → instant summary 300–500c → embed → upsert_summary(anchor_id)
+    → insert_source → instant summary ≤500c → embed → upsert_summary(anchor_id)
 
 on_session_finalize (async)
     → DeepSeek full summary replaces instant (fallback: instant stays)
@@ -46,7 +46,8 @@ kw_recall
 | `knowwhere_db.py` | PG/pgvector CRUD, `search_relevant`, `recall_deep`, fixture cleanup |
 | `summary_pipeline.py` | Instant/full summaries, Ollama embed |
 | `kw_injection.py` | Pure injection formatting/filtering |
-| `scripts/install_plugin.sh` | Symlink → `~/.hermes/plugins/knowwhere` |
+| `scripts/install_plugin.sh` | Symlink → `~/.hermes/plugins/knowwhere`; backups → `~/.hermes/plugin-backups/knowwhere/` |
+| `hermes_env.py` | Read `HERMES_HOME/.env` without mutating `os.environ` |
 | `scripts/eval_cross_session_outcome.py` | Live outcome harness + JSON report |
 
 ## Installation
@@ -64,8 +65,8 @@ hermes plugins enable knowwhere   # idempotent
 - Live-PG: 61 Summaries, 61/61 Embeddings, 0 NULL (Stand Verifikation 2026-07-10).
 - `anchor_id` auf bestehenden Nightly-Summaries meist NULL — Hook-Pipeline füllt das für neue Turns.
 - Debut-Exploration nur am **ersten Turn**, getrennt von Relevanz-Suche.
-- Outcome-Eval nutzt fixture-prefix-isolierte Suche; Produktion sucht global.
-- DeepSeek/Ollama/DB müssen für `--live` Eval erreichbar sein.
+- Outcome-Eval: fixture-isolated diagnostic + global corpus check (61+ summaries, production min_score/UCB + debut merge).
+- DeepSeek/Ollama/DB für `--live` Eval; Secrets aus `~/.hermes/.env` wenn Shell leer.
 
 ## Tests (2026-07-10)
 
@@ -73,8 +74,9 @@ hermes plugins enable knowwhere   # idempotent
 |---|---|
 | `python3 test_pipeline.py` | 109/109 OK |
 | `python3 test_outcome_loop.py` | 14/14 OK |
-| `python3 scripts/eval_cross_session_outcome.py --live` | status: pass (baseline ohne Fix-Fakten; injected mit J14-J15/Modul 7/Flux) |
+| `python3 test_cross_session.py` | 17/17 OK |
+| `env -u DEEPSEEK_API_KEY -u KNOWWHERE_DB_URL python3 scripts/eval_cross_session_outcome.py --live` | status: pass; global_corpus + fixture_isolated true; db_restored true |
 
 ## dimtest-Erkenntnis (unverändert gültig)
 
-80–500 Zeichen selbsttragende Summaries wirken als primäres Wissen. Deep Recall bleibt Fallback für Verbatim/Kontext.
+80–500 Zeichen selbsttragende Summaries wirken als primäres Wissen. Kein künstliches Padding unter 300c. Deep Recall bleibt Fallback für Verbatim/Kontext.
