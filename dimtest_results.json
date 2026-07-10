@@ -1,0 +1,400 @@
+{
+  "dims_768": 768,
+  "dims_64": 64,
+  "n_chunks": 280,
+  "top_n": 10,
+  "summary": {
+    "avg_overlap": 5.083333333333333,
+    "avg_overlap_pct": 50.83333333333333,
+    "avg_jaccard": 0.3652319902319901,
+    "avg_spearman": -8.49702380952381,
+    "avg_cos_delta": -0.1141022410657671,
+    "size_reduction_pct": 91.66666666666666
+  },
+  "queries": [
+    {
+      "query": "Era pet spritesheet transparent",
+      "overlap": 7,
+      "overlap_pct": 70.0,
+      "jaccard": 0.5384615384615384,
+      "spearman": -0.5357142857142858,
+      "cos_delta": -0.08629864454269409,
+      "top_768_texts": [
+        "## Skills Touched - `session-reflection`: used (watchdog cron) - `daily-log`: used (created today's ",
+        "## N\u00e4chste Session - Era Spritesheet: Weitere Frame-f\u00fcr-Frame-Optimierung der transparenten Pixel - ",
+        "## Discoveries (PoC-Ergebnisse) - **Hypothese: \"Findet Embedding-\u00c4hnlichkeit relevante Memories?\" \u2192 ",
+        "## Results - Document Precision@3: 0.33 \u2192 **0.73** (2.2\u00d7) - Conversation Precision@3: 0.27 \u2192 **0.87*",
+        "- [ ] Era-Dashboard: Service-Hints in eigenem Browser (Comet) visuell best\u00e4tigen",
+        "## Finale Routing-Tabelle ``` QUERY              \u2192 MODEL                 \u2192 PROVIDER     \u2192 KOSTEN \u2500\u2500\u2500",
+        "- [ ] TTS-Konfiguration final pr\u00fcfen \u2014 Edge Seraphina vs. alternative Provider (OpenAI TTS, Mistral ",
+        "## Skills Created/Patched - `thorough-hermes-skill-publishing`: installed v1.5.0, customized to v1.5",
+        "## Skills Touched - `knowwhere-vision`: created (v1.0.0) \u2014 komplette Architektur-Vision, Design-Ents",
+        "- [ ] Memory-Limit erh\u00f6hen (memory_char_limit 2200, user_char_limit 1375) \u2014 oder Archivierungsstrate"
+      ],
+      "top_64_texts": [
+        "## Skills Touched - `session-reflection`: used (watchdog cron) - `daily-log`: used (created today's ",
+        "## Skills Created/Patched - `thorough-hermes-skill-publishing`: installed v1.5.0, customized to v1.5",
+        "## Discoveries (PoC-Ergebnisse) - **Hypothese: \"Findet Embedding-\u00c4hnlichkeit relevante Memories?\" \u2192 ",
+        "## Skills Touched - `fal-image-generation`: patched (xAI Editing section, Switching-Backends-Tabelle",
+        "## Skills Touched - `knowwhere-vision`: created (v1.0.0) \u2014 komplette Architektur-Vision, Design-Ents",
+        "## N\u00e4chste Session - Era Spritesheet: Weitere Frame-f\u00fcr-Frame-Optimierung der transparenten Pixel - ",
+        "## Erkenntnisse - `himalaya template send` unterst\u00fctzt keine `-H` Flags; Header m\u00fcssen inline im gep",
+        "- [ ] Era-Dashboard: Service-Hints in eigenem Browser (Comet) visuell best\u00e4tigen",
+        "## Finale Routing-Tabelle ``` QUERY              \u2192 MODEL                 \u2192 PROVIDER     \u2192 KOSTEN \u2500\u2500\u2500",
+        "## Skills Touched - `cost-awareness`: used (this cron runs on flash), no patch needed \u2014 the OpenRout"
+      ]
+    },
+    {
+      "query": "KnowWhere Subconscious Layer Agent",
+      "overlap": 6,
+      "overlap_pct": 60.0,
+      "jaccard": 0.42857142857142855,
+      "spearman": -1.2285714285714286,
+      "cos_delta": -0.09895379344622295,
+      "top_768_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, ",
+        "## N\u00e4chste Session - GWS OAuth Console-Check - Krankenfahrt RAILWAY_TOKEN - Gemini Key Deadline 19. ",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[07:59]** [Gateway: telegram] KnowWhere Retrieval Quality Hy: Retrieval-Qualit\u00e4t sp\u00fc"
+      ],
+      "top_64_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "### Laufend 15. \u2705 Session Cost Logging 16. \u2705 Error Rate Tracking 17. \u2705 KnowWhere Shadow-Memory (wenn",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte"
+      ]
+    },
+    {
+      "query": "gbrain setup configuration",
+      "overlap": 4,
+      "overlap_pct": 40.0,
+      "jaccard": 0.25,
+      "spearman": -11.7,
+      "cos_delta": -0.1654321849346161,
+      "top_768_texts": [
+        "## Files Changed (KnowWhere) - `src/storage/in_memory.rs`: +~120 lines (3-Level-Cascade, 64d/256d In",
+        "### Key findings - gte-modernbert ONNX has 2 inputs, not 3 \u2014 must check `session.get_inputs()` dynam",
+        "## Files Changed - `src/memory/fractal_node.rs`: +47 lines (truncate_vector, mean_vector, matryoshka",
+        "### T0.1: Cost Visibility einschalten ```bash hermes config set display.show_cost true ``` \u2192 Du sieh",
+        "## Skills Created/Patched - `thorough-hermes-skill-publishing`: installed v1.5.0, customized to v1.5",
+        "### Issue 3: Hindsight Doctor-Warnung \ud83d\udfe1 ``` Doctor sagt \"hindsight configured but not available\" abe",
+        "### Session 20260622_102649_e4e061 (Research-Loop sauber fertiggestellt) - Facts: WDOG-e4e061-1 thro",
+        "## Skills Touched - `fal-image-generation`: patched (xAI Editing section, Switching-Backends-Tabelle",
+        "### Credential Pool ``` DeepSeek Pool [966605...] round_robin [1fab22...] round_robin Wenn Key #1 th",
+        "## Finale Routing-Tabelle ``` QUERY              \u2192 MODEL                 \u2192 PROVIDER     \u2192 KOSTEN \u2500\u2500\u2500"
+      ],
+      "top_64_texts": [
+        "### Session 20260622_102649_e4e061 (Research-Loop sauber fertiggestellt) - Facts: WDOG-e4e061-1 thro",
+        "## Discoveries - **HA Config-Pfad korrigiert**: Home Assistant Konfiguration liegt auf `~/Desktop/co",
+        "## Sessions - **00:37\u201301:46** \u2014 ruvector Technical Evaluation (172 messages, ~69 min) - Nimar asked ",
+        "## Files Changed - `src/memory/fractal_node.rs`: +47 lines (truncate_vector, mean_vector, matryoshka",
+        "### Key findings - gte-modernbert ONNX has 2 inputs, not 3 \u2014 must check `session.get_inputs()` dynam",
+        "## Discoveries - NRW F\u00f6rdertopf \"2.000 \u20ac f\u00fcr Tausend\" / \"Gute Nachbarschaft\": Dortmund still funded,",
+        "### T2.4: Profil-Gateways aktivieren Deine 12 Profile sind alle `stopped`. F\u00fcr den Kanban Orchestrat",
+        "## Notes - Complete report at `~/.hermes/cron/output/livekit-hermes-deepdive.md` \u2014 waiting for opera",
+        "## Errors & Fixes - **Error**: bge-reranker-v2-m3 OOM bei jeder Query (16\u00d7 BFCArena \u00e0 15MB = ~240MB,",
+        "## Files Changed (KnowWhere) - `src/storage/in_memory.rs`: +~120 lines (3-Level-Cascade, 64d/256d In"
+      ]
+    },
+    {
+      "query": "Nimar HomePod Music",
+      "overlap": 7,
+      "overlap_pct": 70.0,
+      "jaccard": 0.5384615384615384,
+      "spearman": -1.1071428571428572,
+      "cos_delta": -0.0991102967943464,
+      "top_768_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, ",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[07:59]** [Gateway: telegram] KnowWhere Retrieval Quality Hy: Retrieval-Qualit\u00e4t sp\u00fc"
+      ],
+      "top_64_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "### Laufend 15. \u2705 Session Cost Logging 16. \u2705 Error Rate Tracking 17. \u2705 KnowWhere Shadow-Memory (wenn",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?"
+      ]
+    },
+    {
+      "query": "Moradbakhti KI KMU Kaltakquise",
+      "overlap": 6,
+      "overlap_pct": 60.0,
+      "jaccard": 0.42857142857142855,
+      "spearman": -1.2285714285714286,
+      "cos_delta": -0.09895379344622295,
+      "top_768_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, ",
+        "## N\u00e4chste Session - GWS OAuth Console-Check - Krankenfahrt RAILWAY_TOKEN - Gemini Key Deadline 19. ",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[07:59]** [Gateway: telegram] KnowWhere Retrieval Quality Hy: Retrieval-Qualit\u00e4t sp\u00fc"
+      ],
+      "top_64_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "### Laufend 15. \u2705 Session Cost Logging 16. \u2705 Error Rate Tracking 17. \u2705 KnowWhere Shadow-Memory (wenn",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte"
+      ]
+    },
+    {
+      "query": "Pitch Kunde",
+      "overlap": 7,
+      "overlap_pct": 70.0,
+      "jaccard": 0.5384615384615384,
+      "spearman": -0.9285714285714286,
+      "cos_delta": -0.10039950268609184,
+      "top_768_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, "
+      ],
+      "top_64_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "### Laufend 15. \u2705 Session Cost Logging 16. \u2705 Error Rate Tracking 17. \u2705 KnowWhere Shadow-Memory (wenn",
+        "- [ ] Loop-Metriken: False-Positive-Rate 76.9% analysieren \u2014 ist der Gate zu streng?"
+      ]
+    },
+    {
+      "query": "Dashboard Mission Control",
+      "overlap": 7,
+      "overlap_pct": 70.0,
+      "jaccard": 0.5384615384615384,
+      "spearman": -1.1071428571428572,
+      "cos_delta": -0.0991102967943464,
+      "top_768_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, ",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[07:59]** [Gateway: telegram] KnowWhere Retrieval Quality Hy: Retrieval-Qualit\u00e4t sp\u00fc"
+      ],
+      "top_64_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "### Laufend 15. \u2705 Session Cost Logging 16. \u2705 Error Rate Tracking 17. \u2705 KnowWhere Shadow-Memory (wenn",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?"
+      ]
+    },
+    {
+      "query": "Website SEO",
+      "overlap": 7,
+      "overlap_pct": 70.0,
+      "jaccard": 0.5384615384615384,
+      "spearman": -0.9285714285714286,
+      "cos_delta": -0.10039950268609184,
+      "top_768_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "## Sessions - **[21:27]** [Gateway: telegram] Bilingual Greeting Exchange: Hi",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, "
+      ],
+      "top_64_texts": [
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## Sessions - **[08:56]** [Gateway: telegram] Requesting MP3 voice messages: [The user sent a voice ",
+        "## PHASE 1: Configuration Overhaul \u2014 Diese Woche **Owner:** Hermes + Nimar (einmaliger Login) **Impa",
+        "## Sessions - **[08:56]** [Gateway: telegram] Reviewing Blocked Kanban Tasks: Kontrolliere mal bitte",
+        "- [ ] Agent Loop Engineering Skill testen im Live-Betrieb",
+        "## Sessions (continued) - **18:00\u201318:15** \u2014 Fractal Hierarchy in API Response: 5 Felder zu ScoredNod",
+        "## Sessions - **[00:04]** [Gateway: telegram] Untitled session: Kannst du YouTube Videos sehen?",
+        "### Laufend 15. \u2705 Session Cost Logging 16. \u2705 Error Rate Tracking 17. \u2705 KnowWhere Shadow-Memory (wenn",
+        "- [ ] Loop-Metriken: False-Positive-Rate 76.9% analysieren \u2014 ist der Gate zu streng?"
+      ]
+    },
+    {
+      "query": "Railway deployment",
+      "overlap": 2,
+      "overlap_pct": 20.0,
+      "jaccard": 0.1111111111111111,
+      "spearman": -19.0,
+      "cos_delta": -0.1463945209980011,
+      "top_768_texts": [
+        "### Session 20260622_113609_45e9aa DELTA3 (Cineastischer Hero + Rest fehlt) - Facts: WDOG-45e9aa-DEL",
+        "### Session 20260622_024307_76f65d (Feuerprobe Sortierungslogik) - Facts: WDOG-76f65d-1 through -3, ",
+        "## Discoveries - **HA Config-Pfad korrigiert**: Home Assistant Konfiguration liegt auf `~/Desktop/co",
+        "### Session 20260620_140346_329799 Delta (Agent Loops Research) - Facts: WDOG-329799-DELTA2-1 throug",
+        "## Files Changed (KnowWhere) - `src/storage/in_memory.rs`: +~120 lines (3-Level-Cascade, 64d/256d In",
+        "## Skills Touched - `cost-awareness`: used (this cron runs on flash), no patch needed \u2014 the OpenRout",
+        "### Issue 3: Hindsight Doctor-Warnung \ud83d\udfe1 ``` Doctor sagt \"hindsight configured but not available\" abe",
+        "### Hindsight retained (operation_id: 69e7a96a) - WDOG-329799-DELTA-1: KnowWhere Canary Benchmark Re",
+        "## Sessions - **[00:15]** [Gateway: telegram] Projekt- und Dokumenten\u00fcbersic: [The user sent a voice",
+        "## Sessions - **[07:59]** [Gateway: telegram] KnowWhere Retrieval Quality Hy: Retrieval-Qualit\u00e4t sp\u00fc"
+      ],
+      "top_64_texts": [
+        "## N\u00e4chste Session - `grok-vision-beta` \u2192 `grok-4.3` migrieren (Vision-Modell deprecated, betrifft a",
+        "## Errors & Fixes - **Error**: Lazy Analysis \u2014 \"75% Overhead\", \"redundant\", \"brauchst du nicht\" ohne",
+        "## N\u00e4chste Session - KnowWhere Re-Embedding: cargo build pr\u00fcfen, Batch-Migration der 68K Nodes start",
+        "## Errors & Fixes - **Error**: `grok-vision-beta` deprecated (400 Bad Request, 0 Vision-Modelle in x",
+        "### Session 20260622_113609_45e9aa DELTA3 (Cineastischer Hero + Rest fehlt) - Facts: WDOG-45e9aa-DEL",
+        "## Skills Touched - `daily-log`: patched v2\u2192v3 (Shell\u2192Hermes, 10KB-Trim) - `cost-awareness`: patched",
+        "## Errors & Fixes - **Error**: Era Error Watch Delivery-Fehler (Telegram Thread-ID verloren + Gatewa",
+        "## Skills Touched - `cost-awareness`: used (this cron runs on flash), no patch needed \u2014 the OpenRout",
+        "### Files changed - `benchmarks/reports/2026-05-19_reranker_eval/reranker_eval_script.py` \u2014 4 patche",
+        "## N\u00e4chste Session - Home Assistant vollst\u00e4ndig zum Laufen bringen (virtiofs-Deadlock fixen via Dock"
+      ]
+    },
+    {
+      "query": "Ollama embedding model",
+      "overlap": 4,
+      "overlap_pct": 40.0,
+      "jaccard": 0.25,
+      "spearman": -4.2,
+      "cos_delta": -0.15226024389266968,
+      "top_768_texts": [
+        "## Sessions - **12:32\u201314:06** \u2014 Knowwhere Vector Retrieval Bug Fix (245 messages, ~94 min) - Root ca",
+        "## Discoveries - **nomic-embed-text is asymmetric:** Query and document embeddings live in different",
+        "## Results - Re-embed: 15,448 nodes updated, **0 failed** - Roadmap document ingested (ID: `1437db41",
+        "## Key Decisions - **Embedding Model**: `nomic-embed-text` v1.5 (8192 ctx) ersetzt `nomic-embed-text",
+        "## Files Changed (AMB) - `agent-memory-benchmark-main/src/memory_bench/memory/knowwhere.py`: user_id",
+        "## Files Changed (KnowWhere) - `src/api/routes.rs`: Query/document prefix separation, StoreExternalR",
+        "### Profile Orchestration ``` 12 Profile, alle mit: \u2705 profile.yaml (description) \u2705 model: deepseek/d",
+        "## Skills Touched - `re_inject.py`: patched v2.0 \u2014 Content-Preservation, Research-Template, Self-Che",
+        "## Discoveries (PoC-Ergebnisse) - **Hypothese: \"Findet Embedding-\u00c4hnlichkeit relevante Memories?\" \u2192 ",
+        "### T1.1: Nous Portal Login \u26a1 NIMMT BRAUCHT NIMAR (5 Min) ```bash hermes login --provider nous ``` \u2192"
+      ],
+      "top_64_texts": [
+        "## Sessions - **12:32\u201314:06** \u2014 Knowwhere Vector Retrieval Bug Fix (245 messages, ~94 min) - Root ca",
+        "## Discoveries - **nomic-embed-text is asymmetric:** Query and document embeddings live in different",
+        "## Discoveries (PoC-Ergebnisse) - **Hypothese: \"Findet Embedding-\u00c4hnlichkeit relevante Memories?\" \u2192 ",
+        "## Sessions - **00:37\u201301:46** \u2014 ruvector Technical Evaluation (172 messages, ~69 min) - Nimar asked ",
+        "## Key Decisions - **5 Hierarchy-Felder** in `retrieve_fractal` API-Response: context_tier, parent_t",
+        "## Skills Touched - `session-reflection`: used (watchdog cron) - `daily-log`: used (created today's ",
+        "## Files Changed - `src/memory/fractal_node.rs`: +47 lines (truncate_vector, mean_vector, matryoshka",
+        "## Errors & Fixes - **Error:** Vector retrieval scores collapsed 0.83 \u2192 0.03 after store fix \u2192 **Roo",
+        "## Files Changed (AMB) - `agent-memory-benchmark-main/src/memory_bench/memory/knowwhere.py`: user_id",
+        "## Erkenntnisse - `himalaya template send` unterst\u00fctzt keine `-H` Flags; Header m\u00fcssen inline im gep"
+      ]
+    },
+    {
+      "query": "wichtig",
+      "overlap": 2,
+      "overlap_pct": 20.0,
+      "jaccard": 0.1111111111111111,
+      "spearman": -60.0,
+      "cos_delta": -0.09060889482498169,
+      "top_768_texts": [
+        "- [ ] Verification Gate patchen: Browser-Visual-Verifikation durch computer_use ersetzen",
+        "### T0.1: Cost Visibility einschalten ```bash hermes config set display.show_cost true ``` \u2192 Du sieh",
+        "## Skills Touched - `memory-discipline`: eingehalten (Kompaktierung durchgef\u00fchrt) - `wiki-maintenanc",
+        "- [ ] Loop-Metriken: False-Positive-Rate 76.9% analysieren \u2014 ist der Gate zu streng?",
+        "### Opa-Companion Isolation ``` opa-heiner Profil: Model:    deepseek/deepseek-v4-pro (Nous Portal) ",
+        "## Discoveries - **Aravind Srinivas' Curiosity-These als Pitch-Framing**: \"Die knappe Ressource ist ",
+        "### Session 20260619_104748_a0e986 (Preflight Status Update) - 16msgs, 10tools, source=tui, STALE (O",
+        "## PHASE 4: Measurement Infrastructure \u2014 Ongoing **Owner:** Hermes (ich) **Impact:** MITTEL (langfri",
+        "### T4.1: Session Cost Logging Jede Session ab jetzt mit Cost-Tracking. Ich schreib einen Cron-Job d",
+        "- [ ] 3-Strike-Eskalation mit SUBAGENT-DER-FABRIZIERT testen (nicht \"Daten existieren nicht\" sondern"
+      ],
+      "top_64_texts": [
+        "## PHASE 3: Memory Architecture \u2014 The Hard Conversation \u26a1 BRAUCHT NIMAR **Owner:** Nimar (strategisc",
+        "## PHASE 4: Measurement Infrastructure \u2014 Ongoing **Owner:** Hermes (ich) **Impact:** MITTEL (langfri",
+        "## Errors & Fixes - **Error:** `hindsight_recall` fehlgeschlagen mit `cannot import name 'HindsightE",
+        "### T0.5: xAI OAuth Doku f\u00fcr Nimar Kann ich nicht selbst machen (braucht Browser/Cookies), aber ich ",
+        "## Discoveries - **HA Config-Pfad korrigiert**: Home Assistant Konfiguration liegt auf `~/Desktop/co",
+        "- [ ] Verification Gate patchen: Browser-Visual-Verifikation durch computer_use ersetzen",
+        "## N\u00e4chste Session - Warten auf Magnus-Feedback (Domain, E-Mail, Trockenmauer-Foto) - Bei positiver ",
+        "### T4.5: KnowWhere Integration Milestones Falls Weg A gew\u00e4hlt wird: - Week 1: KnowWhere als Shadow-",
+        "## Summary > *\"Dein Setup ist jetzt da wo ich es haben will. Keine Showstopper, keine Geldverbrennun",
+        "### T2.4: Profil-Gateways aktivieren Deine 12 Profile sind alle `stopped`. F\u00fcr den Kanban Orchestrat"
+      ]
+    },
+    {
+      "query": "Error fix",
+      "overlap": 2,
+      "overlap_pct": 20.0,
+      "jaccard": 0.1111111111111111,
+      "spearman": 0.0,
+      "cos_delta": -0.13130521774291992,
+      "top_768_texts": [
+        "## Sessions - **[18:58]** [Gateway: telegram] Untitled session: Schau dir mal das profil von https:/",
+        "## Discoveries - **Hindsight stale-task trap:** Stale `processing` consolidation tasks in PostgreSQL",
+        "- [ ] Verification Gate patchen: Browser-Visual-Verifikation durch computer_use ersetzen",
+        "## Skills Touched - `fal-image-generation`: patched (xAI Editing section, Switching-Backends-Tabelle",
+        "## Sessions (continued) - **16:00\u201317:00** \u2014 Embedding Model Switch Goal: v2-moe \u2192 v1.5",
+        "## Sessions (continued) - **17:00\u201317:30** \u2014 Consolidation Re-Activation: Content Threshold Fix (500\u2192",
+        "## Skills Touched - `daily-log`: patched v2\u2192v3 (Shell\u2192Hermes, 10KB-Trim) - `cost-awareness`: patched",
+        "## SECTION 2: Architecture Review \u2014 The Good, The Bad, The Expensive",
+        "### Session 20260622_022249_ad5e40 (Ralph Loop, Gate-Update und Era-Check) - Facts: WDOG-ad5e40-1 th",
+        "## Skills Touched - `parallel-consensus`: patched v2\u2192v3 (Runtime Contract, Evals, Verification, Pare"
+      ],
+      "top_64_texts": [
+        "### Files changed - `benchmarks/reports/2026-05-19_reranker_eval/reranker_eval_script.py` \u2014 4 patche",
+        "## Errors & Fixes - **Error**: `grok-vision-beta` deprecated (400 Bad Request, 0 Vision-Modelle in x",
+        "## Discoveries - **Hindsight stale-task trap:** Stale `processing` consolidation tasks in PostgreSQL",
+        "## Skills Touched - `fal-image-generation`: patched (xAI Editing section, Switching-Backends-Tabelle",
+        "### Session 20260622_102649_e4e061 (Research-Loop sauber fertiggestellt) - Facts: WDOG-e4e061-1 thro",
+        "- [ ] TTS-Konfiguration final pr\u00fcfen \u2014 Edge Seraphina vs. alternative Provider (OpenAI TTS, Mistral ",
+        "### Issue 3: Hindsight Doctor-Warnung \ud83d\udfe1 ``` Doctor sagt \"hindsight configured but not available\" abe",
+        "- [ ] re_inject.py: Gap-Namen spezifischer machen (statt 5\u00d7 \"no source\" \u2192 gezielte Quellen-Namen)",
+        "## N\u00e4chste Session - `grok-vision-beta` \u2192 `grok-4.3` migrieren (Vision-Modell deprecated, betrifft a",
+        "## Errors & Fixes - None \u2014 pure evaluation session, no code changed"
+      ]
+    }
+  ]
+}
