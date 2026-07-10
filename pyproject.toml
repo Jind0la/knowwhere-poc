@@ -38,10 +38,10 @@ all = ["knowwhere[embeddings,openai,dev]"]
 knowwhere = "knowwhere.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/Jind0la/knowwhere"
-Documentation = "https://github.com/Jind0la/knowwhere#readme"
-Repository = "https://github.com/Jind0la/knowwhere"
-Issues = "https://github.com/Jind0la/knowwhere/issues"
+Homepage = "https://github.com/Jind0la/knowwhere-poc"
+Documentation = "https://github.com/Jind0la/knowwhere-poc#readme"
+Repository = "https://github.com/Jind0la/knowwhere-poc"
+Issues = "https://github.com/Jind0la/knowwhere-poc/issues"
 
 [tool.setuptools.packages.find]
 include = ["knowwhere*"]
