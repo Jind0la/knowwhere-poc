@@ -35,6 +35,46 @@ MIN_MSGS = 10
 SUMMARY_MAX_TOKENS = 600
 SESSION_PREVIEW_CHARS = 2000
 
+# ── Lesson-extraction prompts (v4, 2026-07-16) ─────────────────────────
+# Shift from 'what happened' to 'what Era should LEARN'.
+# PITFALL/FIX/RULE format based on HORMA's contrastive failure analysis.
+
+SESSION_SYSTEM_PROMPT = (
+    "Du extrahierst LEKTIONEN aus Arbeitssessions einer KI-Operatorin namens Era. "
+    "Dein Output sind WENN-DANN-Regeln, nicht Tagebucheinträge. "
+    "Jeder Satz muss Era befähigen, Fehler nicht zu wiederholen oder "
+    "erfolgreiche Strategien gezielt wieder anzuwenden. "
+    "Max 300 Zeichen. Deutsch. Kein 'Diese Session…', kein 'Heute wurde…'."
+)
+
+SESSION_USER_PROMPT = (
+    "Extrahiere aus dieser Session, was Era daraus LERNEN sollte:\n\n"
+    "1. PITFALL — Welcher Fehler/Fehlannahme trat auf? WARUM?\n"
+    "2. FIX — Was war die konkrete Lösung?\n"
+    "3. RULE — WENN-DANN-Regel für die Zukunft.\n"
+    "   (z.B. 'WENN Hook nicht feuert, DANN grep ob Hermes diesen Hook dispatched')\n"
+    "4. KEYWORDS — Projektnamen, Tools, Technologien explizit nennen.\n\n"
+    "Selbsttragend. Max 300 Zeichen.\n\n"
+    "SESSION: {title} ({msg_count} Nachrichten)\n\n"
+    "CONTENT:\n{content}"
+)
+
+DAILY_SYSTEM_PROMPT = (
+    "Du extrahierst TAGESLEKTIONEN für eine KI-Operatorin namens Era. "
+    "Fasse die 2-3 wichtigsten Lessons Learned des Tages in einen einzelnen, "
+    "informationsdichten Text zusammen. Jede Lektion als WENN-DANN-Regel. "
+    "Kein 'Heute war ein produktiver Tag'. Max 600 Zeichen. Deutsch."
+)
+
+DAILY_USER_PROMPT = (
+    "Aus den heutigen Sessions ({date}, {count} Sessions): "
+    "Was sind die 2-3 wichtigsten LEKTIONEN für Era?\n\n"
+    "Formatiere jede Lektion als:\n"
+    "→ WENN [Situation], DANN [Aktion]. Grund: [warum].\n\n"
+    "Selbsttragend. Keyword-reich. Max 600 Zeichen.\n\n"
+    "SESSION-SUMMARIES:\n{session_text}"
+)
+
 
 def get_today_sessions(target_date: str) -> list[dict]:
     """Get all non-cron, non-trivial sessions from state.db for target_date."""
@@ -195,20 +235,16 @@ def generate_session_summaries(sessions: list[dict]) -> list[dict]:
             skipped += 1
             continue
         
-        prompt = f"""Fasse diese Session in EINEM praegnanten Satz (max 200 Zeichen) zusammen.
-Nenne: das Hauptthema, die wichtigste Entscheidung oder Erkenntnis.
-
-SESSION: {sess['title']} ({sess['message_count']} Nachrichten)
-
-CONTENT:
-{content[:2000]}
-
-Antworte NUR mit dem Satz. Kein Prefix, kein "Diese Session...". Direkt den Inhalt."""
+        prompt = SESSION_USER_PROMPT.format(
+            title=sess['title'] or "Unbenannt",
+            msg_count=sess['message_count'],
+            content=content[:2000]
+        )
         
         summary = call_deepseek(
-            "Du fasst Arbeitssessions in extrem praegnante Saetze zusammen. Max 200 Zeichen. Kein Smalltalk.",
+            SESSION_SYSTEM_PROMPT,
             prompt,
-            max_tokens=200
+            max_tokens=250
         )
         results.append({
             "id": sess["id"],
@@ -234,26 +270,14 @@ def generate_combined_summary(session_summaries: list[dict], target_date: str) -
     
     session_text = "\n".join(session_lines)
     
-    prompt = f"""Erstelle eine dichte Zusammenfassung der heutigen Arbeit ({target_date}).
-{len(session_summaries)} Sessions.
-
-Extrahiere:
-1. PROJEKTE: An welchen Projekten wurde gearbeitet? (1 Satz pro Projekt)
-2. ENTSCHEIDUNGEN: Welche architektonischen/strategischen Entscheidungen wurden getroffen?
-3. QUERVERBINDUNGEN: Verbindungen zu frueheren Sessions/Projekten/Ideen?
-4. OFFENE PUNKTE + NAECHSTER SCHRITT
-
-Regeln:
-- JEDES Wort muss Information tragen. Kein "Heute war ein produktiver Tag".
-- Max 800 Zeichen.
-- Deutsch.
-- Format: "[ProjectName|date] Fakten. Connections. Decisions. Next step."
-
-SESSION-SUMMARIES:
-{session_text[:4000]}"""
+    prompt = DAILY_USER_PROMPT.format(
+        date=target_date,
+        count=len(session_summaries),
+        session_text=session_text[:4000]
+    )
 
     return call_deepseek(
-        "Du bist ein praeziser technischer Zusammenfasser. Fasse Arbeitssessions in dichte, informationsreiche Bloecke zusammen. Jedes Wort muss Information tragen. Max 800 Zeichen.",
+        DAILY_SYSTEM_PROMPT,
         prompt,
         max_tokens=SUMMARY_MAX_TOKENS
     )

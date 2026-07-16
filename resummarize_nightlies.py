@@ -36,40 +36,39 @@ API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DELAY_S = 0.6  # rate limit buffer
 
 
-# ── Improved prompts ──────────────────────────────────────────────────────
+# ── Lesson-extraction prompts (v4, 2026-07-16) ─────────────────────────
+# Shift from 'what happened' to 'what Era should LEARN'.
+# PITFALL/FIX/RULE format based on HORMA's contrastive failure analysis.
 
 SYSTEM_PROMPT = (
-    "Du fasst Arbeitssessions in einen einzelnen, selbsttragenden Satz zusammen. "
-    "Jeder Satz muss ohne Kontext verständlich sein. Kein 'Diese Session…', "
-    "kein Daily-Digest-Stil. Deutsch. Max 250 Zeichen."
+    "Du extrahierst LEKTIONEN aus Arbeitssessions einer KI-Operatorin namens Era. "
+    "Dein Output sind WENN-DANN-Regeln, nicht Tagebucheinträge. "
+    "Jeder Satz muss Era befähigen, Fehler nicht zu wiederholen oder "
+    "erfolgreiche Strategien gezielt wieder anzuwenden. "
+    "Deutsch. Max 300 Zeichen. Kein 'Diese Session…', kein 'Heute wurde…'."
 )
 
-USER_PROMPT_TEMPLATE = """Fasse diese Session in EINEM Satz zusammen. Der Satz muss enthalten:
-1. WAS wurde entschieden oder erkannt
-2. WARUM (Grund / Motivation)
-3. WELCHE konkrete Handlung folgte (oder: was ist der nächste Schritt)
+USER_PROMPT_TEMPLATE = (
+    "Extrahiere aus dieser Session, was Era daraus LERNEN sollte:\n\n"
+    "1. PITFALL — Welcher Fehler/Fehlannahme trat auf? WARUM?\n"
+    "2. FIX — Was war die konkrete Lösung?\n"
+    "3. RULE — WENN-DANN-Regel für die Zukunft.\n"
+    "   (z.B. 'WENN Hook nicht feuert, DANN grep ob Hermes diesen Hook dispatched')\n"
+    "4. KEYWORDS — Projektnamen, Tools, Technologien explizit nennen.\n\n"
+    "Selbsttragend. Max 300 Zeichen.\n\n"
+    "SESSION: {title} ({msg_count} Nachrichten, Projekt: {project})\n\n"
+    "CONTENT:\n{content}"
+)
 
-Wichtig:
-- Selbsttragend: der Satz muss ohne Kontext verständlich sein
-- Projektnamen und Schlüsselbegriffe explizit nennen (z.B. "KnowWhere", "pgvector", "Railway", "Moradbakhti-KI")
-- Kein "Diese Session…", kein "Heute wurde…"
-- Max 250 Zeichen
-
-SESSION: {title} ({msg_count} Nachrichten, Projekt: {project})
-
-CONTENT:
-{content}"""
-
-DAILY_PROMPT_TEMPLATE = """Fasse die heutigen Sessions ({date}) in EINEM informationsdichten Satz zusammen.
-Nenne: die 1-2 wichtigsten Entscheidungen des Tages, deren Grund, und die resultierende Aktion.
-
-SESSION-SUMMARIES:
-{summaries}
-
-Regeln:
-- Selbsttragend: der Satz muss ohne Kontext verständlich sein
-- Max 300 Zeichen
-- Deutsch"""
+DAILY_PROMPT_TEMPLATE = (
+    "Aus den Sessions vom {date}: Was sind die 2-3 wichtigsten LEKTIONEN für Era?\n\n"
+    "Formatiere JEDE Lektion exakt so:\n"
+    "→ WENN [Situation], DANN [Aktion]. Grund: [warum].\n\n"
+    "WICHTIG: Kein Einleitungssatz wie 'Hier sind die Lektionen'. "
+    "DIREKT mit '→' starten. "
+    "Selbsttragend. Keyword-reich. Max 500 Zeichen. Deutsch.\n\n"
+    "SESSION-SUMMARIES:\n{summaries}"
+)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -165,7 +164,7 @@ def main():
 
     db = KnowWhereDB()
 
-    # Fetch all summaries
+    # Fetch ALL summaries — even Hook instants have source content in state.db
     with db.conn.cursor() as cur:
         cur.execute("""
             SELECT id, session_id, summary_text, project
@@ -204,13 +203,15 @@ def main():
         try:
             if is_d:
                 # Daily: re-summarize from per-session summaries of that date
+                # Date format: daily summaries use YYYY-MM-DD, session IDs use YYYYMMDD
+                date_compact = date_str.replace('-', '')
                 with db.conn.cursor() as cur:
                     cur.execute("""
                         SELECT summary_text FROM summaries
                         WHERE session_id NOT LIKE 'daily-%%'
                           AND session_id LIKE %s
                         ORDER BY created_at
-                    """, (f"{date_str}%",))
+                    """, (f"{date_compact}%",))
                     sub_summaries = [r[0] for r in cur.fetchall()]
                 if not sub_summaries:
                     skipped += 1
@@ -219,7 +220,7 @@ def main():
                     date=date_str,
                     summaries="\n".join(f"- {t}" for t in sub_summaries[:20]),
                 )
-                new_text = call_deepseek(SYSTEM_PROMPT, prompt, max_tokens=300)
+                new_text = call_deepseek(SYSTEM_PROMPT, prompt, max_tokens=400)
             else:
                 # Session: re-summarize from state.db source content
                 content = get_session_content(sid)

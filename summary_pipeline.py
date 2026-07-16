@@ -23,6 +23,29 @@ DEEPSEEK_TIMEOUT = 45
 INSTANT_MAX_CHARS = 500
 FULL_MAX_CHARS = 500
 
+# ── Lesson-extraction prompt (v4, 2026-07-16) ──────────────────────────
+# Shift from "what happened" (journalism) to "what Era should LEARN".
+# Based on HORMA's contrastive failure analysis + episodic→procedural memory conversion.
+
+FULL_SUMMARY_SYSTEM = (
+    "Du extrahierst LEKTIONEN aus Arbeitssessions einer KI-Operatorin namens Era. "
+    "Dein Output ist kein Tagebuch — es sind WENN-DANN-Regeln für zukünftige Sessions. "
+    "Jeder Satz muss Era befähigen, einen Fehler nicht zu wiederholen oder eine "
+    "erfolgreiche Strategie gezielt wieder anzuwenden. "
+    "Deutsch. Max 500 Zeichen. Kein 'Diese Session…', kein 'Heute wurde…'."
+)
+
+FULL_SUMMARY_INSTRUCTION = (
+    "Extrahiere aus dieser Session, was Era daraus LERNEN sollte:\n\n"
+    "1. PITFALL — Welcher Fehler, Fehlannahme oder Blindspot trat auf? WARUM?\n"
+    "2. FIX — Was war die konkrete Lösung oder Korrektur?\n"
+    "3. RULE — Formuliere eine WENN-DANN-Regel für die Zukunft.\n"
+    "   (z.B. 'WENN Hook nicht feuert, DANN grep ob Hermes diesen Hook dispatched')\n"
+    "4. KEYWORDS — Nenne Projektnamen, Tools, Technologien explizit.\n\n"
+    "Selbsttragend — der Satz muss OHNE Session-Kontext verständlich sein.\n"
+    "Max 500 Zeichen. Deutsch."
+)
+
 
 def _normalize(vec: np.ndarray) -> np.ndarray:
     norm = float(np.linalg.norm(vec)) or 1.0
@@ -78,27 +101,27 @@ def make_instant_summary(
 
 
 def call_deepseek_full_summary(turns_text: str) -> Optional[str]:
-    """Generate a richer session summary via DeepSeek; None on failure."""
+    """Generate a lesson-extraction summary via DeepSeek; None on failure.
+
+    v4 (2026-07-16): Shifted from 'summarize what happened' to
+    'extract what Era should LEARN' — PITFALL/FIX/RULE format.
+    """
     from hermes_env import get_secret
 
     api_key = get_secret("DEEPSEEK_API_KEY", "")
     if not api_key or not (turns_text or "").strip():
         return None
 
-    system = (
-        "Summarize this Hermes session for cross-session agent memory. "
-        "Include root cause, decision, and exact fix if any. "
-        f"Max {FULL_MAX_CHARS} characters. German if the session is German. "
-        "Self-contained; no meta commentary."
-    )
+    user_prompt = FULL_SUMMARY_INSTRUCTION + "\n\nSESSION CONTENT:\n" + turns_text[:8000]
+
     payload = json.dumps(
         {
             "model": "deepseek-chat",
             "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": turns_text[:8000]},
+                {"role": "system", "content": FULL_SUMMARY_SYSTEM},
+                {"role": "user", "content": user_prompt},
             ],
-            "max_tokens": 220,
+            "max_tokens": 250,
             "temperature": 0.2,
         }
     ).encode()
